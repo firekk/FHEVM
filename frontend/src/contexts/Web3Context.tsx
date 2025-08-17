@@ -40,7 +40,6 @@ export const Web3Provider: React.FC<{ children: React.ReactNode }> = ({ children
   const web3Modal = useRef(new Web3Modal()).current
 
   const connect = async () => {
-    debugger
     try {
       setLoading(true)
       
