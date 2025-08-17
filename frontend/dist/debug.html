@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Page</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .error { color: red; }
+        .success { color: green; }
+        .log { background: #f0f0f0; padding: 10px; margin: 10px 0; border-radius: 5px; }
+        button { padding: 10px 15px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>FHEVM dApp Debug Page</h1>
+    
+    <div>
+        <h2>Test Contract Loading</h2>
+        <button onclick="testContractLoading()">Test Contract Loading</button>
+        <div id="contract-result" class="log"></div>
+    </div>
+    
+    <div>
+        <h2>Test Connection</h2>
+        <button onclick="testConnection()">Test Wallet Connection</button>
+        <div id="connection-result" class="log"></div>
+    </div>
+    
+    <div>
+        <h2>Test Contract Calls</h2>
+        <button onclick="testContractCalls()">Test Contract Calls</button>
+        <div id="calls-result" class="log"></div>
+    </div>
+
+    <script src="https://cdn.ethers.io/lib/ethers-5.7.2.umd.min.js" type="application/javascript"></script>
+    <script>
+        let contracts = null;
+        
+        async function testContractLoading() {
+            const result = document.getElementById('contract-result');
+            result.innerHTML = 'Testing contract loading...<br>';
+            
+            try {
+                // Test deployment info
+                result.innerHTML += 'Loading deployment info...<br>';
+                const deploymentResponse = await fetch('/deployment-info.json');
+                const deploymentInfo = await deploymentResponse.json();
+                result.innerHTML += '✓ Deployment Info loaded: ' + deploymentInfo.FHEVoting + '<br>';
+                
+                // Test ABI loading
+                result.innerHTML += 'Loading Voting ABI...<br>';
+                const votingAbiResponse = await fetch('/artifacts/contracts/VotingDemo.sol/VotingDemo.json');
+                const votingAbiData = await votingAbiResponse.json();
+                result.innerHTML += '✓ Voting ABI loaded: ' + votingAbiData.contractName + '<br>';
+                
+                const financeAbiResponse = await fetch('/artifacts/contracts/FinanceDemo.sol/FinanceDemo.json');
+                const financeAbiData = await financeAbiResponse.json();
+                result.innerHTML += '✓ Finance ABI loaded: ' + financeAbiData.contractName + '<br>';
+                
+                // Store ABIs for later use
+                window.votingAbi = votingAbiData.abi;
+                window.financeAbi = financeAbiData.abi;
+                window.deploymentInfo = deploymentInfo;
+                
+                result.innerHTML += '<br><strong>All files loaded successfully!</strong><br>';
+            } catch (error) {
+                result.innerHTML += '<span class="error">Error: ' + error.message + '</span><br>';
+                console.error('Contract loading error:', error);
+            }
+        }
+        
+        async function testConnection() {
+            const result = document.getElementById('connection-result');
+            result.innerHTML = 'Testing wallet connection...<br>';
+            
+            try {
+                if (typeof window.ethereum === 'undefined') {
+                    result.innerHTML += '<span class="error">MetaMask not installed!</span><br>';
+                    return;
+                }
+                
+                result.innerHTML += 'Requesting account access...<br>';
+                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                const account = accounts[0];
+                result.innerHTML += '✓ Connected account: ' + account + '<br>';
+                
+                // Create provider and signer
+                const provider = new ethers.BrowserProvider(window.ethereum);
+                const signer = await provider.getSigner();
+                result.innerHTML += '✓ Provider and signer created<br>';
+                
+                // Test contract creation
+                if (window.votingAbi && window.deploymentInfo) {
+                    const votingContract = new ethers.Contract(window.deploymentInfo.FHEVoting, window.votingAbi, signer);
+                    contracts = { fheVoting: votingContract };
+                    result.innerHTML += '✓ Voting contract created<br>';
+                    
+                    // Test a simple call
+                    const votingInfo = await votingContract.getVotingInfo();
+                    result.innerHTML += '✓ getVotingInfo() call successful<br>';
+                    result.innerHTML += 'Voting Description: ' + votingInfo[0] + '<br>';
+                    result.innerHTML += 'End Time: ' + new Date(Number(votingInfo[1]) * 1000) + '<br>';
+                    result.innerHTML += 'Is Active: ' + votingInfo[2] + '<br>';
+                }
+                
+            } catch (error) {
+                result.innerHTML += '<span class="error">Connection error: ' + error.message + '</span><br>';
+                console.error('Connection error:', error);
+            }
+        }
+        
+        async function testContractCalls() {
+            const result = document.getElementById('calls-result');
+            result.innerHTML = 'Testing contract calls...<br>';
+            
+            try {
+                if (!contracts || !contracts.fheVoting) {
+                    result.innerHTML += '<span class="error">No contract loaded. Please test contract loading first.</span><br>';
+                    return;
+                }
+                
+                result.innerHTML += 'Testing voting contract calls...<br>';
+                
+                // Test various contract calls
+                const calls = [
+                    { name: 'getVotingInfo', call: () => contracts.fheVoting.getVotingInfo() },
+                    { name: 'getTotalWeight', call: () => contracts.fheVoting.getTotalWeight() },
+                    { name: 'getVotedCount', call: () => contracts.fheVoting.getVotedCount() },
+                    { name: 'votingWeights', call: () => contracts.fheVoting.votingWeights(account) },
+                ];
+                
+                for (const { name, call } of calls) {
+                    try {
+                        const resultData = await call();
+                        result.innerHTML += `✓ ${name}(): ${JSON.stringify(resultData)}<br>`;
+                    } catch (error) {
+                        result.innerHTML += `<span class="error">Error in ${name}(): ${error.message}</span><br>`;
+                    }
+                }
+                
+            } catch (error) {
+                result.innerHTML += '<span class="error">Contract calls error: ' + error.message + '</span><br>';
+                console.error('Contract calls error:', error);
+            }
+        }
+        
+        // Check if MetaMask is available on page load
+        window.addEventListener('load', () => {
+            if (typeof window.ethereum === 'undefined') {
+                document.getElementById('connection-result').innerHTML = 
+                    '<span class="error">MetaMask not detected! Please install MetaMask to test dApp functionality.</span>';
+            }
+        });
+    </script>
+</body>
+</html>

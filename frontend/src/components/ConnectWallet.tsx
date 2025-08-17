@@ -1,18 +1,13 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { useWeb3 } from '../contexts/Web3Context'
 
 interface ConnectWalletProps {
   children: React.ReactNode
+  onConnect?: () => void
 }
 
-export const ConnectWallet: React.FC<ConnectWalletProps> = ({ children }) => {
-  const { isConnected, connect, loading } = useWeb3()
-
-  useEffect(() => {
-    if (!isConnected) {
-      connect()
-    }
-  }, [isConnected, connect])
+export const ConnectWallet: React.FC<ConnectWalletProps> = ({ children, onConnect }) => {
+  const { isConnected, loading, connectWallet } = useWeb3()
 
   if (loading) {
     return (
@@ -34,7 +29,13 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ children }) => {
           </div>
           <p className="text-gray-600 mb-4">Please connect your wallet to continue</p>
           <button
-            onClick={connect}
+            onClick={() => {
+              if (onConnect) {
+                onConnect()
+              } else {
+                connectWallet()
+              }
+            }}
             className="btn-primary"
           >
             Connect Wallet

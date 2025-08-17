@@ -28,6 +28,61 @@
   ::-webkit-scrollbar-thumb:hover {
     @apply bg-gray-500;
   }
+  
+  /* Mobile optimizations */
+  @media (max-width: 768px) {
+    body {
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    
+    h1 { font-size: 1.5rem; }
+    h2 { font-size: 1.25rem; }
+    h3 { font-size: 1.125rem; }
+    
+    /* Touch-friendly tap targets */
+    button, .btn-primary, .btn-secondary {
+      min-height: 44px;
+      min-width: 44px;
+    }
+    
+    /* Prevent text overflow on mobile */
+    .truncate-text {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    
+    /* Reduce padding on mobile */
+    .p-mobile { padding: 1rem; }
+    .p-mobile-2 { padding: 1.5rem; }
+    .p-mobile-4 { padding: 2rem; }
+    
+    .px-mobile { padding-left: 1rem; padding-right: 1rem; }
+    .py-mobile { padding-top: 1rem; padding-bottom: 1rem; }
+    
+    /* Adjust spacing on mobile */
+    .space-y-mobile > * + * {
+      margin-top: 1rem;
+    }
+    
+    .space-y-mobile-2 > * + * {
+      margin-top: 1.5rem;
+    }
+    
+    .space-y-mobile-4 > * + * {
+      margin-top: 2rem;
+    }
+  }
+  
+  /* Reduce motion for users who prefer it */
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
 }
 
 @layer components {
@@ -55,6 +110,157 @@
     @apply w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50/50;
   }
   
+  /* Optimized icon sizes and spacing */
+  .icon-lg {
+    width: 2.5rem !important;
+    height: 2.5rem !important;
+  }
+  
+  .icon-md {
+    width: 2rem !important;
+    height: 2rem !important;
+  }
+  
+  .icon-sm {
+    width: 1.5rem !important;
+    height: 1.5rem !important;
+  }
+  
+  .icon-xs {
+    width: 1.25rem !important;
+    height: 1.25rem !important;
+  }
+  
+  /* Standardized icon containers */
+  .icon-container {
+    @apply flex items-center justify-center rounded-xl backdrop-blur-sm transition-all duration-300;
+  }
+  
+  .icon-container-lg {
+    @apply w-12 h-12;
+  }
+  
+  .icon-container-md {
+    @apply w-10 h-10;
+  }
+  
+  .icon-container-sm {
+    @apply w-8 h-8;
+  }
+  
+  .icon-container-xs {
+    @apply w-6 h-6;
+  }
+  
+  .icon-bg-primary {
+    @apply bg-blue-500/10;
+  }
+  
+  .icon-bg-success {
+    @apply bg-green-500/10;
+  }
+  
+  .icon-bg-warning {
+    @apply bg-orange-500/10;
+  }
+  
+  .icon-bg-danger {
+    @apply bg-red-500/10;
+  }
+  
+  .icon-bg-purple {
+    @apply bg-purple-500/10;
+  }
+  
+  .icon-text-primary {
+    @apply text-blue-600;
+  }
+  
+  .icon-text-success {
+    @apply text-green-600;
+  }
+  
+  .icon-text-warning {
+    @apply text-orange-600;
+  }
+  
+  .icon-text-danger {
+    @apply text-red-600;
+  }
+  
+  .icon-text-purple {
+    @apply text-purple-600;
+  }
+  
+  /* Hover effects for icons */
+  .icon-hover {
+    @apply transform hover:scale-105 transition-transform duration-300;
+  }
+  
+  .icon-shadow {
+    @apply shadow-lg hover:shadow-xl transition-shadow duration-300;
+  }
+  
+  /* Container and layout optimizations */
+  .container-optimized {
+    @apply max-w-6xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+  
+  /* Card header optimizations */
+  .card-header {
+    @apply p-6 border-b border-gray-100;
+  }
+  
+  .card-title {
+    @apply text-xl font-bold text-gray-900;
+  }
+  
+  .card-subtitle {
+    @apply text-sm text-gray-600 mt-1;
+  }
+  
+  /* Responsive grid adjustments */
+  .grid-auto {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6;
+  }
+  
+  /* Balance display optimizations */
+  .balance-card {
+    @apply bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl p-6 text-white;
+  }
+  
+  .balance-amount {
+    @apply text-2xl font-bold;
+  }
+  
+  .balance-label {
+    @apply text-white/80 text-sm;
+  }
+  
+  /* Transaction card optimizations */
+  .transaction-card {
+    @apply bg-gray-50 rounded-xl p-4 border border-gray-200 hover:shadow-md transition-all duration-200;
+  }
+  
+  /* Voting option cards */
+  .vote-option {
+    @apply p-4 rounded-xl border-2 transition-all duration-300 cursor-pointer hover:shadow-lg;
+  }
+  
+  .vote-option-lg {
+    @apply p-6 rounded-2xl border-2 transition-all duration-300 cursor-pointer hover:shadow-xl;
+  }
+  
+  /* Loading spinner optimization */
+  .spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #3b82f6;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+  
   /* Glass morphism effect */
   .glass {
     @apply backdrop-blur-lg bg-white/20 border border-white/30;
@@ -74,6 +280,106 @@
     animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
   
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .animate-slide-up {
+    animation: slideUp 0.3s ease-out;
+  }
+  
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* Mobile-specific components */
+  .mobile-card {
+    @apply bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden;
+  }
+  
+  .mobile-card-header {
+    @apply p-4 border-b border-gray-100;
+  }
+  
+  .mobile-card-body {
+    @apply p-4;
+  }
+  
+  .mobile-bottom-nav {
+    @apply fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50;
+  }
+  
+  .mobile-bottom-nav-item {
+    @apply flex flex-col items-center justify-center p-2 min-h-[44px];
+  }
+  
+  /* Mobile optimized form elements */
+  .mobile-input {
+    @apply w-full px-3 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base;
+  }
+  
+  .mobile-select {
+    @apply w-full px-3 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base bg-white;
+  }
+  
+  /* Mobile menu animations */
+  .mobile-menu-enter {
+    animation: menuEnter 0.3s ease-out;
+  }
+  
+  .mobile-menu-exit {
+    animation: menuExit 0.3s ease-in;
+  }
+  
+  @keyframes menuEnter {
+    from {
+      opacity: 0;
+      transform: translateX(100%);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+  
+  @keyframes menuExit {
+    from {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    to {
+      opacity: 0;
+      transform: translateX(100%);
+    }
+  }
+  
+  /* Mobile swipe gestures */
+  .swipeable {
+    touch-action: pan-y;
+  }
+  
+  .mobile-backdrop {
+    @apply fixed inset-0 bg-black/50 z-40;
+  }
+  
   /* Loading spinner */
   .spinner {
     width: 20px;
@@ -90,46 +396,3 @@
   }
 }
 
-.container {
-  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
-}
-
-.grid {
-  @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6;
-}
-
-.flex {
-  @apply flex;
-}
-
-.items-center {
-  @apply items-center;
-}
-
-.justify-between {
-  @apply justify-between;
-}
-
-.gap-4 {
-  @apply gap-4;
-}
-
-.mt-4 {
-  @apply mt-4;
-}
-
-.mb-4 {
-  @apply mb-4;
-}
-
-.p-4 {
-  @apply p-4;
-}
-
-.rounded-lg {
-  @apply rounded-lg;
-}
-
-.shadow-md {
-  @apply shadow-md;
-}

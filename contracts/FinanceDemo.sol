@@ -31,7 +31,7 @@ contract FinanceDemo {
     mapping(address => User) public users;
     mapping(uint256 => Transaction) public transactions;
     
-    uint256 public transactionCount;
+    uint256 public transactionCounter;
     address public admin;
     
     event Deposited(address indexed user, uint256 amount);
@@ -70,8 +70,8 @@ contract FinanceDemo {
         
         users[msg.sender].balance += _amount;
         
-        transactionCount++;
-        transactions[transactionCount] = Transaction({
+        transactionCounter++;
+        transactions[transactionCounter] = Transaction({
             from: msg.sender,
             to: address(0),
             amount: _amount,
@@ -91,8 +91,8 @@ contract FinanceDemo {
         
         users[msg.sender].balance -= _amount;
         
-        transactionCount++;
-        transactions[transactionCount] = Transaction({
+        transactionCounter++;
+        transactions[transactionCounter] = Transaction({
             from: msg.sender,
             to: address(0),
             amount: _amount,
@@ -115,8 +115,8 @@ contract FinanceDemo {
         users[msg.sender].balance -= _amount;
         users[_to].balance += _amount;
         
-        transactionCount++;
-        transactions[transactionCount] = Transaction({
+        transactionCounter++;
+        transactions[transactionCounter] = Transaction({
             from: msg.sender,
             to: _to,
             amount: _amount,
@@ -148,7 +148,7 @@ contract FinanceDemo {
      */
     function getTransactionHistory() external view returns (uint256[] memory) {
         uint256 count = 0;
-        for (uint256 i = 1; i <= transactionCount; i++) {
+        for (uint256 i = 1; i <= transactionCounter; i++) {
             if (transactions[i].from == msg.sender || transactions[i].to == msg.sender) {
                 count++;
             }
@@ -156,7 +156,7 @@ contract FinanceDemo {
         
         uint256[] memory result = new uint256[](count);
         uint256 index = 0;
-        for (uint256 i = 1; i <= transactionCount; i++) {
+        for (uint256 i = 1; i <= transactionCounter; i++) {
             if (transactions[i].from == msg.sender || transactions[i].to == msg.sender) {
                 result[index] = i;
                 index++;
@@ -172,5 +172,12 @@ contract FinanceDemo {
     function getTransactionDetails(uint256 _txId) external view returns (address from, address to, uint256 amount, bytes32 encryptedData, uint256 timestamp) {
         Transaction storage tx = transactions[_txId];
         return (tx.from, tx.to, tx.amount, tx.encryptedData, tx.timestamp);
+    }
+    
+    /**
+     * @dev 获取交易数量
+     */
+    function transactionCount() external view returns (uint256) {
+        return transactionCounter;
     }
 }

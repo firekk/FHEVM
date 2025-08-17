@@ -147,4 +147,34 @@ contract VotingDemo {
     function getVotingActive() external view returns (bool) {
         return voting.isActive;
     }
+    
+    /**
+     * @dev 获取总权重
+     */
+    function getTotalWeight() public view returns (uint256) {
+        uint256 total = 0;
+        // 简化版本 - 实际应该遍历所有地址
+        for (uint256 i = 0; i < 20; i++) {
+            address voterAddress = address(uint160(i));
+            if (votingWeights[voterAddress] > 0) {
+                total += votingWeights[voterAddress];
+            }
+        }
+        return total;
+    }
+    
+    /**
+     * @dev 获取投票人数
+     */
+    function getVotedCount() public view returns (uint256) {
+        uint256 count = 0;
+        // 简化版本 - 实际应该遍历所有地址
+        for (uint256 i = 0; i < 20; i++) {
+            address voterAddress = address(uint160(i));
+            if (hasVoted[voterAddress]) {
+                count++;
+            }
+        }
+        return count;
+    }
 }

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Connection Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .success { color: green; }
+        .error { color: red; }
+        .log { background: #f0f0f0; padding: 10px; margin: 10px 0; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <h1>Connection Test Page</h1>
+    
+    <div>
+        <h2>Test Static Files</h2>
+        <button onclick="testStaticFiles()">Test Static Files</button>
+        <div id="static-files-result" class="log"></div>
+    </div>
+    
+    <div>
+        <h2>Test Contract Loading</h2>
+        <button onclick="testContractLoading()">Test Contract Loading</button>
+        <div id="contract-loading-result" class="log"></div>
+    </div>
+    
+    <div>
+        <h2>Test Connection</h2>
+        <button onclick="testConnection()">Test Wallet Connection</button>
+        <div id="connection-result" class="log"></div>
+    </div>
+
+    <script src="https://cdn.ethers.io/lib/ethers-5.7.2.umd.min.js" type="application/javascript"></script>
+    <script>
+        async function testStaticFiles() {
+            const result = document.getElementById('static-files-result');
+            result.innerHTML = 'Testing static files...<br>';
+            
+            try {
+                // Test deployment info
+                result.innerHTML += 'Loading deployment info...<br>';
+                const deploymentResponse = await fetch('/deployment-info.json');
+                const deploymentInfo = await deploymentResponse.json();
+                result.innerHTML += '<span class="success">✓ Deployment Info loaded: ' + deploymentInfo.FHEVoting + '</span><br>';
+                
+                // Test ABI files
+                result.innerHTML += 'Loading Voting ABI...<br>';
+                const votingAbiResponse = await fetch('/artifacts/contracts/VotingDemo.sol/VotingDemo.json');
+                const votingAbiData = await votingAbiResponse.json();
+                result.innerHTML += '<span class="success">✓ Voting ABI loaded: ' + votingAbiData.contractName + '</span><br>';
+                
+                const financeAbiResponse = await fetch('/artifacts/contracts/FinanceDemo.sol/FinanceDemo.json');
+                const financeAbiData = await financeAbiResponse.json();
+                result.innerHTML += '<span class="success">✓ Finance ABI loaded: ' + financeAbiData.contractName + '</span><br>';
+                
+                result.innerHTML += '<br><strong class="success">All static files loaded successfully!</strong><br>';
+            } catch (error) {
+                result.innerHTML += '<span class="error">Error: ' + error.message + '</span><br>';
+                console.error('Static files error:', error);
+            }
+        }
+        
+        async function testContractLoading() {
+            const result = document.getElementById('contract-loading-result');
+            result.innerHTML = 'Testing contract loading...<br>';
+            
+            try {
+                if (typeof window.ethereum === 'undefined') {
+                    result.innerHTML += '<span class="error">MetaMask not installed!</span><br>';
+                    return;
+                }
+                
+                // Load deployment info
+                const deploymentResponse = await fetch('/deployment-info.json');
+                const deploymentInfo = await deploymentResponse.json();
+                
+                // Load ABI files
+                const [votingAbiResponse, financeAbiResponse] = await Promise.all([
+                    fetch('/artifacts/contracts/VotingDemo.sol/VotingDemo.json'),
+                    fetch('/artifacts/contracts/FinanceDemo.sol/FinanceDemo.json')
+                ]);
+                
+                const votingAbiData = await votingAbiResponse.json();
+                const financeAbiData = await financeAbiResponse.json();
+                
+                const votingAbi = votingAbiData.abi;
+                const financeAbi = financeAbiData.abi;
+                
+                result.innerHTML += '<span class="success">✓ Contract data loaded successfully</span><br>';
+                result.innerHTML += 'Voting Contract: ' + deploymentInfo.FHEVoting + '<br>';
+                result.innerHTML += 'Finance Contract: ' + deploymentInfo.FHEFinance + '<br>';
+                
+            } catch (error) {
+                result.innerHTML += '<span class="error">Error: ' + error.message + '</span><br>';
+                console.error('Contract loading error:', error);
+            }
+        }
+        
+        async function testConnection() {
+            const result = document.getElementById('connection-result');
+            result.innerHTML = 'Testing wallet connection...<br>';
+            
+            try {
+                if (typeof window.ethereum === 'undefined') {
+                    result.innerHTML += '<span class="error">MetaMask not installed!</span><br>';
+                    return;
+                }
+                
+                result.innerHTML += 'Requesting account access...<br>';
+                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                const account = accounts[0];
+                result.innerHTML += '<span class="success">✓ Connected account: ' + account + '</span><br>';
+                
+                // Create provider and signer
+                const provider = new ethers.BrowserProvider(window.ethereum);
+                const signer = await provider.getSigner();
+                result.innerHTML += '<span class="success">✓ Provider and signer created</span><br>';
+                
+            } catch (error) {
+                result.innerHTML += '<span class="error">Connection error: ' + error.message + '</span><br>';
+                console.error('Connection error:', error);
+            }
+        }
+        
+        // Check if MetaMask is available on page load
+        window.addEventListener('load', () => {
+            if (typeof window.ethereum === 'undefined') {
+                document.getElementById('connection-result').innerHTML = 
+                    '<span class="error">MetaMask not detected! Please install MetaMask to test dApp functionality.</span>';
+            }
+        });
+    </script>
+</body>
+</html>

@@ -2,6 +2,7 @@ import React from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { Web3Provider } from './contexts/Web3Context'
 import { Header } from './components/Header'
+import { MobileNavigation } from './components/MobileNavigation'
 import { Home } from './pages/Home'
 import { Voting } from './pages/Voting'
 import { Finance } from './pages/Finance'
@@ -13,7 +14,7 @@ function App() {
       <Router>
         <div className="min-h-screen bg-gray-50">
           <Header />
-          <main className="container mx-auto px-4 py-8">
+          <main className="container mx-auto px-4 py-4 md:py-8">
             <ConnectWallet>
               <Routes>
                 <Route path="/" element={<Home />} />
@@ -22,6 +23,7 @@ function App() {
               </Routes>
             </ConnectWallet>
           </main>
+          <MobileNavigation />
         </div>
       </Router>
     </Web3Provider>
